@@ -24,9 +24,26 @@ const userRegisterCtrl = expressAsyncHandler(async (req, res) => {
     }
   });
   
+//-------------------------------
+//Login user
+//-------------------------------
 
+const loginUserCtrl = expressAsyncHandler(async (req, res) => {
+   const { email, password} = req.body;
+    //check se usuário existe
+    const userFound = await User.findOne({ email });
+    //Check se a senha confere
+    if (userFound && (await userFound.isPasswordMatched(password))) {
+      res.json({
+         userFound});
+    } else {
+      res.status(401);
+      throw new Error("Email ou senha inválidos");
+    }
+  });
   module.exports = {
     
-    userRegisterCtrl
+    userRegisterCtrl,
+    loginUserCtrl
   
   };
