@@ -3,6 +3,7 @@ require('dotenv').config();
 const cors = require('cors');
 const { dbConnection } = require('./database/config');
 const userRoutes = require("./route/users");
+const { errorHandler, notFound } = require("./middlewares/error/errorHandler");
 
 // servidor de express
 const app = express();
@@ -24,7 +25,9 @@ app.use( express.json() );
 app.use("/api/users", userRoutes);
 
 
-
+//err handler
+app.use(notFound);
+app.use(errorHandler);
 
 app.listen( process.env.PORT, () => {
     console.log(`Servidor na porta ${ process.env.PORT }`);
