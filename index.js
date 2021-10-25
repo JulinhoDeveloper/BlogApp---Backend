@@ -2,7 +2,7 @@ const express = require('express');
 require('dotenv').config();
 const cors = require('cors');
 const { dbConnection } = require('./database/config');
-
+const userRoutes = require("./route/users");
 
 // servidor de express
 const app = express();
@@ -20,7 +20,8 @@ app.use( express.static('public') );
 app.use( express.json() );
 
 // Rotas
-
+//Users route
+app.use("/api/users", userRoutes);
 
 
 
