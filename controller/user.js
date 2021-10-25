@@ -1,5 +1,6 @@
 const User = require("../model/User");
 const expressAsyncHandler = require("express-async-handler");
+const generateToken = require("../configToken/token");
 
 //-------------------------------------
 //Registro
@@ -35,7 +36,13 @@ const loginUserCtrl = expressAsyncHandler(async (req, res) => {
     //Check se a senha confere
     if (userFound && (await userFound.isPasswordMatched(password))) {
       res.json({
-         userFound});
+      firstName: userFound?.firstName,
+      lastName: userFound?.lastName,
+      email: userFound?.email,
+      profilePhoto: userFound?.profilePhoto,
+      isAdmin: userFound?.isAdmin,
+      token: generateToken(userFound?._id)
+        });
     } else {
       res.status(401);
       throw new Error("Email ou senha inválidos");
