@@ -1,6 +1,7 @@
 const User = require("../model/User");
 const expressAsyncHandler = require("express-async-handler");
 const generateToken = require("../configToken/token");
+const validateMongodbId = require("../utils/validateMongodbID");
 
 //-------------------------------------
 //Registro
@@ -36,6 +37,8 @@ const loginUserCtrl = expressAsyncHandler(async (req, res) => {
     //Check se a senha confere
     if (userFound && (await userFound.isPasswordMatched(password))) {
       res.json({
+        _id: userFound?._id,
+        firstName: userFound?.firstName,
       firstName: userFound?.firstName,
       lastName: userFound?.lastName,
       email: userFound?.email,
@@ -48,9 +51,41 @@ const loginUserCtrl = expressAsyncHandler(async (req, res) => {
       throw new Error("Email ou senha inválidos");
     }
   });
+
+//------------------------------
+//Users
+//-------------------------------
+const fetchUsersCtrl = expressAsyncHandler(async (req, res) => {
+ 
+  try {
+    const users = await User.find({});
+    res.json(users);
+  } catch (error) {
+    res.json(error);
+  }
+});
+
+//------------------------------
+//Delete user
+//------------------------------
+const deleteUsersCtrl = expressAsyncHandler(async (req, res) => {
+  const { id } = req.params;
+  //checar se o id é válido
+  validateMongodbId(id);
+  try {
+    const deletedUser = await User.findByIdAndDelete(id);
+    res.json(deletedUser);
+  } catch (error) {
+    res.json(error);
+  }
+});
+
+
   module.exports = {
     
     userRegisterCtrl,
-    loginUserCtrl
+    loginUserCtrl,
+    fetchUsersCtrl,
+    deleteUsersCtrl
   
   };
