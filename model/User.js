@@ -118,6 +118,6 @@ userSchema.methods.isPasswordMatched = async function (enteredPassword) {
   };
   
   
-  const User = mongoose.model("User", userSchema);
+  const User = mongoose.model("UserBlogApp", userSchema);
   
   module.exports = User;
