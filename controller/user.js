@@ -193,7 +193,33 @@ const followingUserCtrl = expressAsyncHandler(async (req, res) => {
   res.json("Seguindo com sucesso");
 });
 
+//------------------------------
+//unfollow
+//------------------------------
 
+const unfollowUserCtrl = expressAsyncHandler(async (req, res) => {
+  const { unFollowId } = req.body;
+  const loginUserId = req.user.id;
+
+  await User.findByIdAndUpdate(
+    unFollowId,
+    {
+      $pull: { followers: loginUserId },
+      isFollowing: false,
+    },
+    { new: true }
+  );
+
+  await User.findByIdAndUpdate(
+    loginUserId,
+    {
+      $pull: { following: unFollowId },
+    },
+    { new: true }
+  );
+
+  res.json("Você deixou de seguir esse usuário");
+});
   module.exports = {
     userRegisterCtrl,
     loginUserCtrl,
@@ -203,5 +229,6 @@ const followingUserCtrl = expressAsyncHandler(async (req, res) => {
     userProfileCtrl,
     updateUserCtrl,
     updateUserPasswordCtrl,
-    followingUserCtrl
+    followingUserCtrl,
+    unfollowUserCtrl
   };
