@@ -94,12 +94,72 @@ const fetchUserDetailsCtrl = expressAsyncHandler(async (req, res) => {
     res.json(error);
   }
 });
+
+//------------------------------
+//perfil do usuário
+//------------------------------
+const userProfileCtrl = expressAsyncHandler(async (req, res) => {
+  const { id } = req.params;
+  validateMongodbId(id);
+  try {
+    const myProfile = await User.findById(id);
+      res.json(myProfile);
+  } catch (error) {
+    res.json(error);
+  }
+});
+
+//------------------------------
+//atualizar perfil
+//------------------------------
+const updateUserCtrl = expressAsyncHandler(async (req, res) => {
+  const { _id } = req?.user;
+
+  validateMongodbId(_id);
+  const user = await User.findByIdAndUpdate(
+    _id,
+    {
+      firstName: req?.body?.firstName,
+      lastName: req?.body?.lastName,
+      email: req?.body?.email,
+      bio: req?.body?.bio,
+    },
+    {
+      new: true,
+      runValidators: true,
+    }
+  );
+  res.json(user);
+});
+
+//------------------------------
+//atualizar senha
+//------------------------------
+
+const updateUserPasswordCtrl = expressAsyncHandler(async (req, res) => {
+  // desestruturando o user id
+  const { _id } = req.user;
+  const { password } = req.body;
+  validateMongodbId(_id);
+  //Encontrando o usuário pelo id
+  const user = await User.findById(_id);
+
+  if (password) {
+    user.password = password;
+    const updatedUser = await user.save();
+    res.json(updatedUser);
+  } else {
+    res.json(user);
+  }
+});
+
   module.exports = {
-    
     userRegisterCtrl,
     loginUserCtrl,
     fetchUsersCtrl,
     deleteUsersCtrl,
-    fetchUserDetailsCtrl
-  
+    fetchUserDetailsCtrl,
+    userProfileCtrl,
+    updateUserCtrl,
+    updateUserPasswordCtrl
   };
